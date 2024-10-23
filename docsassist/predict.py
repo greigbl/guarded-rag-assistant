@@ -35,6 +35,8 @@ from docsassist.schema import (  # noqa: E402
     RAGOutput,
 )
 
+logger = logging.getLogger(__name__)
+
 try:
     rag_deployment_id = RAGDeployment().id
     grading_deployment_id = GradingDeployment().id
@@ -78,7 +80,7 @@ def _predict_with_retry(
                     raise TimeoutError(
                         f"Server did not start within {max_wait_seconds} seconds"
                     )
-                print(
+                logger.info(
                     f"Server is starting. Retrying in {retry_interval_seconds} seconds..."
                 )
                 time.sleep(retry_interval_seconds)

@@ -72,6 +72,8 @@ improvements can be merged in the future.
 This app template requires certain feature flags to be enabled or disabled in your DataRobot account.
 The required feature flags can be found in [infra/feature_flag_requirements.yaml](infra/feature_flag_requirements.yaml). Contact your DataRobot representative for more information.
 
+## Architecture Overview
+![Guarded RAG Architecture](https://s3.amazonaws.com/datarobot_public/drx/recipe_gifs/rag_architecture.svg)
 
 ## Make changes
 ### Change the RAG documents
