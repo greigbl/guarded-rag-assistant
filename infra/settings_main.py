@@ -24,8 +24,6 @@ from pydantic_settings import (
     SettingsConfigDict,
 )
 
-from docsassist.i18n import LanguageCode
-
 from .common.globals import (
     GlobalPredictionEnvironmentPlatforms,
     GlobalRuntimeEnvironment,
@@ -62,9 +60,6 @@ class CoreSettings(BaseSettings):
     application_type: ApplicationType = Field(
         description="Whether to use the default DR QA frontend or a user-provided frontend (DIY)",
     )
-    app_locale: LanguageCode = Field(
-        description="locale used for the application",
-    )
 
     model_config = SettingsConfigDict(env_prefix="MAIN_", case_sensitive=False)
 
@@ -90,7 +85,6 @@ core = CoreSettings(
     rag_documents="assets/datarobot_english_documentation_docsassist.zip",
     rag_type=RAGType.DR,
     application_type=ApplicationType.DR,
-    app_locale=LanguageCode.EN,
 )
 
 runtime_environment_moderations = GlobalRuntimeEnvironment.PYTHON_311_MODERATIONS.value

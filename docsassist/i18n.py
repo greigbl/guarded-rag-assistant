@@ -33,6 +33,9 @@ class LanguageCode(str, Enum):
     ALL = {EN, ES, FR, JA, KO, PT}
 
 
+# Locale for prompts and app front end
+APP_LOCALE: LanguageCode = LanguageCode.EN
+
 app_locale_env_name: str = "APP_LOCALE"
 
 
@@ -61,8 +64,8 @@ class LocaleSettings(BaseSettings):
         validation_alias=AliasChoices(
             "MLOPS_RUNTIME_PARAM_" + app_locale_env_name,
             "MAIN_" + app_locale_env_name,
-            app_locale_env_name,
-        )
+        ),
+        default=APP_LOCALE,
     )
 
     def setup_locale(self) -> None:

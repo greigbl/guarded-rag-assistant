@@ -111,8 +111,9 @@ The required feature flags can be found in [infra/feature_flag_requirements.yaml
    
 ### Fully custom frontend
 1. Edit `infra/settings_main.py` and update `application_type` to `ApplicationType.DIY`
-   - Or, add `MAIN_APPLICATION_TYPE=diy` to your `.env` file.
-   - Optionally, you can set the application locale here as well. e.g. `MAIN_APP_LOCALE=ja_JP`. Supported locales include French (fr_FR), Spanish (es_LA), Korean (ko_KR), and Brazilian Portuguese (pt_BR) in addition to the English default (en_US).
+   - Optionally update `APP_LOCALE` in `docsassist/i18n.py` to toggle the language. 
+     Supported locales include French (fr_FR), Spanish (es_LA), Korean (ko_KR), and 
+     Brazilian Portuguese (pt_BR) in addition to the English default (en_US).
 2. Run `pulumi up` to update your stack with the example custom streamlit frontend
 3. After provisioning the stack at least once, you can also edit and test the streamlit
    frontend locally using `streamlit run app.py` from the `frontend/` directory (don't 
