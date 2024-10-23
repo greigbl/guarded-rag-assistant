@@ -3,3 +3,5 @@ runtimeParameterDefinitions:
     type: deployment
   - fieldName: GRADING_DEPLOYMENT_ID
     type: deployment
+  - fieldName: APP_LOCALE
+    type: string

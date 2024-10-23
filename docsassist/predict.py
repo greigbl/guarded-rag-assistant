@@ -1,9 +1,16 @@
-# Copyright 2024 DataRobot, Inc. and its affiliates.
-# All rights reserved.
-# DataRobot, Inc.
-# This is proprietary source code of DataRobot, Inc. and its
-# affiliates.
-# Released under the terms of DataRobot Tool and Utility Agreement.
+# Copyright 2024 DataRobot, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 import json
 import logging
@@ -17,14 +24,15 @@ import datarobot as dr
 import pandas as pd
 from datarobot.models.deployment.deployment import Deployment
 from datarobot_predict.deployment import PredictionResult, predict
-from pydantic import ValidationError
 from openai.types.chat.chat_completion_message_param import ChatCompletionMessageParam
+from pydantic import ValidationError
+
 from docsassist.deployments import GradingDeployment, RAGDeployment  # noqa: E402
 from docsassist.schema import (  # noqa: E402
+    Grade,
     GraderOutput,
     RAGInput,
     RAGOutput,
-    Grade,
 )
 
 try:
@@ -119,7 +127,7 @@ def get_rag_completion(
         promptText=question,
         messages=messages,
         association_id=association_id,
-    ).model_dump(mode="json")
+    ).model_dump(mode="json", by_alias=True)
     data["messages"] = json.dumps(data["messages"])
     rag_input = pd.DataFrame.from_records([data])
     logging.info(

@@ -1,12 +1,21 @@
-# Copyright 2024 DataRobot, Inc. and its affiliates.
-# All rights reserved.
-# DataRobot, Inc.
-# This is proprietary source code of DataRobot, Inc. and its
-# affiliates.
-# Released under the terms of DataRobot Tool and Utility Agreement.
+# Copyright 2024 DataRobot, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 import pulumi_datarobot as datarobot
 from pydantic import BaseModel
+
+from docsassist.i18n import gettext
 
 from .common.globals import (
     GlobalGuardrailTemplateName,
@@ -34,10 +43,12 @@ toxicity = GlobalGuardrail(
     deployment_args=DeploymentArgs(
         resource_name=f"Toxicity Guard Deployment [{project_name}]",
         label=f"Toxicity Guard [{project_name}]",
-        predictions_settings=None
-        if default_prediction_server_id
-        else datarobot.DeploymentPredictionsSettingsArgs(
-            min_computes=0, max_computes=1, real_time=True
+        predictions_settings=(
+            None
+            if default_prediction_server_id
+            else datarobot.DeploymentPredictionsSettingsArgs(
+                min_computes=0, max_computes=1, real_time=True
+            )
         ),
     ),
     registered_model_name=GlobalRegisteredModelName.TOXICITY,
@@ -51,7 +62,9 @@ toxicity = GlobalGuardrail(
                 comparand=0.7,
                 comparator=GuardConditionComparator.GREATER_THAN,
             ).model_dump_json(),
-            message="I have detected that your question contains toxic language. Please rephrase your question.",
+            message=gettext(
+                "I have detected that your question contains toxic language. Please rephrase your question."
+            ),
         ),
     ),
 )
@@ -60,10 +73,12 @@ prompt_injection = GlobalGuardrail(
     deployment_args=DeploymentArgs(
         resource_name=f"Prompt Injection Guard Deployment [{project_name}]",
         label=f"Prompt Injection Guard [{project_name}]",
-        predictions_settings=None
-        if default_prediction_server_id
-        else datarobot.DeploymentPredictionsSettingsArgs(
-            min_computes=0, max_computes=1, real_time=True
+        predictions_settings=(
+            None
+            if default_prediction_server_id
+            else datarobot.DeploymentPredictionsSettingsArgs(
+                min_computes=0, max_computes=1, real_time=True
+            )
         ),
     ),
     registered_model_name=GlobalRegisteredModelName.PROMPT_INJECTION,
@@ -77,7 +92,9 @@ prompt_injection = GlobalGuardrail(
                 comparand=0.7,
                 comparator=GuardConditionComparator.GREATER_THAN,
             ).model_dump_json(),
-            message="I have detected that your question contains a prompt injection. Please rephrase your question.",
+            message=gettext(
+                "I have detected that your question contains a prompt injection. Please rephrase your question."
+            ),
         ),
     ),
 )

@@ -174,3 +174,4 @@ deployment_diy_rag/rag_settings.yaml
 deployment_diy_rag/model-metadata.yaml
 
 
+**/e2e/test_results/*

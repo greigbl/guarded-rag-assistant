@@ -1,0 +1,188 @@
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2024-10-08 20:10+0000\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Repo: recipe-docsassist\n"
+"X-Segment-Count: 18\n"
+"X-Word-Count: 79\n"
+
+msgid "**Confidence Scores:**"
+msgstr "**Scores de confiance :**"
+
+msgid "**Content:**"
+msgstr "**Contenu :**"
+
+msgid "**Correct**: the response sufficiently answers the question."
+msgstr "**Correct** : la réponse est suffisante pour répondre à la question."
+
+msgid "**Digress**: the response includes irrelevant information or is not concise."
+msgstr "**Digression** : la réponse contient des informations non pertinentes ou n'est pas concise."
+
+msgid "**How would you rate this response?**"
+msgstr "**Quelle note donneriez-vous à cette réponse ?**"
+
+msgid "**Incomplete**: the response does not fully answer the question."
+msgstr "**Incomplète** : la réponse ne répond pas entièrement à la question."
+
+msgid "**Incorrect**: the response \"hallucinates\" or is the wrong answer to the question."
+msgstr "**Incorrect** : la réponse est « hallucinée » ou n'est pas la bonne réponse à la question."
+
+msgid "**No Answer**: the response claims it cannot or will not answer the question."
+msgstr "**Pas de réponse**: la réponse affirme qu'elle ne peut pas ou ne veut pas répondre à la question."
+
+msgid "**Reference {0}:**"
+msgstr "**Référence {0} :**"
+
+msgid "**Response Grade**: {0}"
+msgstr "**Note de la réponse** : {0}"
+
+msgid "**Source:** {0}"
+msgstr "**Source :** {0}"
+
+msgid "Correct"
+msgstr "Correcte"
+
+msgid "Digress"
+msgstr "Digression"
+
+msgid "Incomplete"
+msgstr "Incomplète"
+
+msgid "Incorrect"
+msgstr "Incorrect"
+
+msgid "No Answer"
+msgstr "Pas de réponse"
+
+msgid "Thank you for your rating!"
+msgstr "Merci pour votre évaluation !"
+
+msgid "User"
+msgstr "Utilisateur"
+
+msgid "Assistant"
+msgstr "Assistant"
+
+msgid "Conversation History"
+msgstr "Historique de la conversation"
+
+msgid "Getting AI response..."
+msgstr "Obtenir une réponse de l'IA..."
+
+msgid "Grade: {0}"
+msgstr "Note : {0}"
+
+msgid "Predicting grade..."
+msgstr "Prédire la note..."
+
+msgid "Show Citations"
+msgstr "Afficher les citations"
+
+msgid "Your message"
+msgstr "Votre message"
+
+msgid "I'm sorry, but I don't have enough information to answer your question. Can you please provide more context or clarify your question?"
+msgstr "Je suis désolé, mais je n'ai pas assez d'informations pour répondre à votre question. Pouvez-vous, s'il vous plaît, fournir plus de contexte ou clarifier votre question ?"
+
+msgid "Hello! How can I assist you today?"
+msgstr "Bonjour, comment puis-je vous aider aujourd'hui ?"
+
+msgid ""
+"                Use the following pieces of context to answer the user's question.\n"
+"                If you don't know the answer, just say that you don't know, don't try to make up an answer.\n"
+"                ----------------\n"
+"                {context}"
+msgstr ""
+"Utilisez les éléments de contexte suivants pour répondre à la question de l'utilisateur. Si vous ne connaissez pas la réponse, dites simplement que vous ne savez pas, n'essayez pas d'inventer une réponse.\n"
+"----------------\n"
+"{context}"
+
+msgid "RAG Custom Model"
+msgstr "Modèle personnalisé RAG"
+
+msgid "RAG Dataset"
+msgstr "Jeu de données RAG"
+
+msgid "RAG Deployment"
+msgstr "Déploiement du RAG"
+
+msgid "RAG LLM Blueprint"
+msgstr "RAG LLM Blueprint"
+
+msgid "RAG Playground"
+msgstr "RAG Playground"
+
+msgid "RAG Registered Model [{project_name}]"
+msgstr "RAG Modèle enregistré [{project_name}]"
+
+msgid "RAG Vector Database"
+msgstr "Base de données vectorielles RAG"
+
+msgid ""
+"                I have detected you are asking about another vendor. I hear they have great products, but I think DataRobot is the best.\n"
+"\n"
+"                For information on integrations, please check our website here:\n"
+"                https://docs.datarobot.com/en/docs/more-info/how-to/index.html"
+msgstr ""
+"                J'ai détecté que vous posiez des questions sur un autre fournisseur. J'ai entendu dire qu'ils avaient d'excellents produits, mais je pense que DataRobot est le meilleur.\n"
+"\n"
+"                Pour plus d'informations sur les intégrations, veuillez consulter notre site web ici :\n"
+"                https://docs.datarobot.com/en/docs/more-info/how-to/index.html"
+
+msgid "DocsAssist Prediction Environment [{project_name}]"
+msgstr "Environnement de prédiction de DocsAssist [{project_name}]"
+
+msgid "DocsAssist Use Case"
+msgstr "Cas d'utilisation de DocsAssist"
+
+msgid "Grading Custom Model"
+msgstr "Modèle personnalisé de notation"
+
+msgid "Grading Deployment"
+msgstr "Déploiement de la gradation"
+
+msgid "Grading Model [{project_name}]"
+msgstr "Modèle de gradation [{project_name}]"
+
+msgid "I have detected that your question contains a prompt injection. Please rephrase your question."
+msgstr "J'ai détecté que votre question contient une injection d'invite. Veuillez reformuler votre question."
+
+msgid "I have detected that your question contains toxic language. Please rephrase your question."
+msgstr "J'ai détecté que votre question contient un langage toxique. Veuillez reformuler votre question."
+
+msgid "Keyword Guard Configuration"
+msgstr "Configuration de Keyword Guard"
+
+msgid "Keyword Guard Deployment"
+msgstr "Déploiement de Keyword Guard"
+
+msgid "Keyword Guard Registered Model [{project_name}]"
+msgstr "Modèle enregistré de Keyword Guard [{project_name}]"
+
+msgid "LLM Credential [{project_name}]"
+msgstr "LLM Credential [{project_name}]"
+
+msgid "Prompt Injection Guard Configuration"
+msgstr "Configuration de la protection contre l'injection d'invites"
+
+msgid "Prompt Injection Guard Deployment"
+msgstr "Déploiement de l'invite à l'injection"
+
+msgid "QA Application Source [{project_name}]"
+msgstr "Source de l'application AQ [{project_name}]"
+
+msgid "QA Application [{project_name}]"
+msgstr "Application AQ [{project_name}]"
+
+msgid "Toxicity Guard Configuration"
+msgstr "Configuration du Toxicity Guard"
+
+msgid "Toxicity Guard Deployment"
+msgstr "Déploiement du Toxicity Guard"
+
+msgid "Use case for DocsAssist application"
+msgstr "Cas d'utilisation de l'application DocsAssist"

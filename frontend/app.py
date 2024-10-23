@@ -1,9 +1,16 @@
-# Copyright 2024 DataRobot, Inc. and its affiliates.
-# All rights reserved.
-# DataRobot, Inc.
-# This is proprietary source code of DataRobot, Inc. and its
-# affiliates.
-# Released under the terms of DataRobot Tool and Utility Agreement.
+# Copyright 2024 DataRobot, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 from __future__ import annotations
 
@@ -15,24 +22,23 @@ from typing import get_args
 
 import datarobot as dr
 import streamlit as st
-from streamlit.delta_generator import DeltaGenerator
-from openai.types.chat.chat_completion_user_message_param import (
-    ChatCompletionUserMessageParam,
-)
 from openai.types.chat.chat_completion_assistant_message_param import (
     ChatCompletionAssistantMessageParam,
 )
-
+from openai.types.chat.chat_completion_user_message_param import (
+    ChatCompletionUserMessageParam,
+)
 from settings import app_settings
+from streamlit.delta_generator import DeltaGenerator
 
 sys.path.append("../")
+from docsassist import predict
+from docsassist.i18n import gettext
 from docsassist.schema import (
     Grade,
     GraderOutput,
     RAGOutput,
 )
-from docsassist import predict
-
 
 logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.INFO)
 
@@ -76,11 +82,12 @@ def render_message(
     container: DeltaGenerator, message: str, is_user: bool = False
 ) -> None:
     message_role = "user" if is_user else "ai"
+    message_label = gettext("User") if is_user else gettext("Assistant")
     container.markdown(
         f"""
     <div class="chat-message {message_role}-message">
         <div class="message-content">
-            <span class="message-label"><b>{'User' if is_user else 'Assistant'}:</b></span>
+            <span class="message-label"><b>{message_label}:</b></span>
             <span class="message-text">{message}</span>
         </div>
     </div>
@@ -90,7 +97,7 @@ def render_message(
 
 
 def render_conversation_history(container: DeltaGenerator) -> None:
-    container.subheader("Conversation History")
+    container.subheader(gettext("Conversation History"))
     for message in st.session_state.messages[:-1]:  # Exclude the latest message
         render_message(container, message["content"], message["role"] == "user")
     st.markdown("---")
@@ -102,18 +109,20 @@ def render_answer_and_citations(
     render_message(container, response.completion, is_user=False)
 
     if app_settings.render_grading_model_scores:
-        st.header(f"**Response Grade**: {grade_output.grade}")
-        st.markdown("**Confidence Scores:**")
+        st.header(
+            gettext("**Response Grade**: {0}").format(gettext(grade_output.grade))
+        )
+        st.markdown(gettext("**Confidence Scores:**"))
         scores = ", ".join(
-            f"{k}: {v:.1%}" for k, v in grade_output.class_scores.items()
+            f"{gettext(k)}: {v:.1%}" for k, v in grade_output.class_scores.items()
         )
         st.markdown(scores)
 
-    with st.expander("Show Citations"):
+    with st.expander(gettext("Show Citations")):
         for i, doc in enumerate(response.references):
-            st.markdown(f"**Reference {i+1}:**")
-            st.markdown(f"**Source:** {doc.metadata.source}")
-            st.markdown("**Content:**")
+            st.markdown(gettext("**Reference {0}:**").format(i + 1))
+            st.markdown(gettext("**Source:** {0}").format(doc.metadata.source))
+            st.markdown(gettext("**Content:**"))
             for text in doc.page_content.split("\\n"):
                 if text.strip():
                     st.markdown(text)
@@ -132,7 +141,7 @@ def main() -> None:
     if "prompt_sent" not in st.session_state:
         st.session_state.prompt_sent = False
     prompt = chat_container.chat_input(
-        placeholder="Your message",
+        placeholder=gettext("Your message"),
         key=None,
         max_chars=None,
         disabled=False,
@@ -144,7 +153,7 @@ def main() -> None:
     if prompt and prompt.strip():
         st.session_state.prompt_sent = True
 
-        with st.spinner("Getting AI response..."):
+        with st.spinner(gettext("Getting AI response...")):
             response, association_id = predict.get_rag_completion(
                 question=prompt,
                 messages=st.session_state.messages,
@@ -159,11 +168,12 @@ def main() -> None:
                 ),
             ]
         )
-        with st.spinner("Predicting grade..."):
+
+        with st.spinner(gettext("Predicting grade...")):
             grade_output = predict.predict_grade(response, association_id)
         st.session_state.confidence = grade_output
         # display the grade
-        st.write(f"Grade: {grade_output.class_scores}")
+        st.write(f"Grades: {grade_output.class_scores}")
 
         st.rerun()
 
@@ -174,26 +184,40 @@ def main() -> None:
             st.session_state.confidence,
         )
 
-        st.subheader("**How would you rate this response?**")
+        st.subheader(gettext("**How would you rate this response?**"))
         cols = st.columns(5)
         grades = get_args(Grade)
 
         for col, grade_to_submit in zip(cols, grades):
-            if col.button(label=grade_to_submit, key=f"button_{grade_to_submit}"):
+            if col.button(
+                label=gettext(grade_to_submit), key=f"button_{grade_to_submit}"
+            ):
                 predict.submit_grade(
                     grade_to_submit,
                     st.session_state.association_id,
                 )
-                st.success("Thank you for your rating!")
+                st.success(gettext("Thank you for your rating!"))
 
         st.write(
-            """
-        **Correct**: the response sufficiently answers the question.
-        **Incorrect**: the response "hallucinates" or is the wrong answer to the question.
-        **Incomplete**: the response does not fully answer the question.
-        **Digress**: the response includes irrelevant information or is not concise.
-        **No Answer**: the response claims it cannot or will not answer the question.
-        """
+            gettext("**Correct**: the response sufficiently answers the question.")
+        )
+        st.write(
+            gettext(
+                '**Incorrect**: the response "hallucinates" or is the wrong answer to the question.'
+            )
+        )
+        st.write(
+            gettext("**Incomplete**: the response does not fully answer the question.")
+        )
+        st.write(
+            gettext(
+                "**Digress**: the response includes irrelevant information or is not concise."
+            )
+        )
+        st.write(
+            gettext(
+                "**No Answer**: the response claims it cannot or will not answer the question."
+            )
         )
 
 

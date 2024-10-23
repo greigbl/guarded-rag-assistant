@@ -1,0 +1,190 @@
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2024-10-08 20:10+0000\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Repo: recipe-docsassist\n"
+"X-Segment-Count: 3\n"
+"X-Word-Count: 3\n"
+
+
+msgid "**Confidence Scores:**"
+msgstr "**Escores de confiança:**"
+
+msgid "**Content:**"
+msgstr "**Conteúdo:**"
+
+msgid "**Correct**: the response sufficiently answers the question."
+msgstr "**Correta**: a resposta responde suficientemente à pergunta."
+
+msgid "**Digress**: the response includes irrelevant information or is not concise."
+msgstr "**Digressões**: a resposta inclui informações irrelevantes ou não é concisa."
+
+msgid "**How would you rate this response?**"
+msgstr "**Como você classificaria essa resposta?**"
+
+msgid "**Incomplete**: the response does not fully answer the question."
+msgstr "**Incompleta**: a resposta não responde totalmente à pergunta."
+
+msgid "**Incorrect**: the response \"hallucinates\" or is the wrong answer to the question."
+msgstr "**Incorreta**: a resposta “alucina” ou é a resposta errada para a pergunta."
+
+msgid "**No Answer**: the response claims it cannot or will not answer the question."
+msgstr "**Sem resposta**: a resposta afirma que não pode ou não vai responder à pergunta."
+
+msgid "**Reference {0}:**"
+msgstr "**Referência {0}:**"
+
+msgid "**Response Grade**: {0}"
+msgstr "**Nota da resposta**: {0}"
+
+msgid "**Source:** {0}"
+msgstr "**Fonte:** {0}"
+
+msgid "Correct"
+msgstr "Correta"
+
+msgid "Digress"
+msgstr "Digressões"
+
+msgid "Incomplete"
+msgstr "Incompleto"
+
+msgid "Incorrect"
+msgstr "Incorreta"
+
+msgid "No Answer"
+msgstr "Sem resposta"
+
+msgid "Thank you for your rating!"
+msgstr "Obrigado por sua avaliação!"
+
+msgid "User"
+msgstr "Usuário"
+
+msgid "Assistant"
+msgstr "Assistente"
+
+msgid "Conversation History"
+msgstr "Histórico de conversas"
+
+msgid "Getting AI response..."
+msgstr "Obtendo resposta da IA..."
+
+msgid "Grade: {0}"
+msgstr "Nota: {0}"
+
+msgid "Predicting grade..."
+msgstr "Previsão da nota..."
+
+msgid "Show Citations"
+msgstr "Mostrar citações"
+
+msgid "Your message"
+msgstr "Sua mensagem"
+
+msgid "I'm sorry, but I don't have enough information to answer your question. Can you please provide more context or clarify your question?"
+msgstr "Sinto muito, mas não tenho informações suficientes para responder à sua pergunta. Você pode fornecer mais contexto ou esclarecer sua pergunta?"
+
+msgid "Hello! How can I assist you today?"
+msgstr "Olá! Como posso ajudá-lo hoje?"
+
+msgid ""
+"                Use the following pieces of context to answer the user's question.\n"
+"                If you don't know the answer, just say that you don't know, don't try to make up an answer.\n"
+"                ----------------\n"
+"                {context}"
+msgstr ""
+"Use os seguintes elementos de contexto para responder à pergunta do usuário. Se o senhor não souber a resposta, diga apenas que não sabe, não tente inventar uma resposta.\n"
+"----------------\n"
+"{context}"
+
+msgid "RAG Custom Model"
+msgstr "Modelo personalizado do RAG"
+
+msgid "RAG Dataset"
+msgstr "Conjunto de dados do RAG"
+
+msgid "RAG Deployment"
+msgstr "Implantação do RAG"
+
+msgid "RAG LLM Blueprint"
+msgstr "Projeto do RAG LLM"
+
+msgid "RAG Playground"
+msgstr "RAG Playground"
+
+msgid "RAG Registered Model [{project_name}]"
+msgstr "Modelo registrado do RAG [{project_name}]"
+
+msgid "RAG Vector Database"
+msgstr "Banco de dados vetorial do RAG"
+
+msgid ""
+"                I have detected you are asking about another vendor. I hear they have great products, but I think DataRobot is the best.\n"
+"\n"
+"                For information on integrations, please check our website here:\n"
+"                https://docs.datarobot.com/en/docs/more-info/how-to/index.html"
+msgstr ""
+"                Percebi que o senhor está perguntando sobre outro fornecedor. Ouvi dizer que eles têm ótimos produtos, mas acho que o DataRobot é o melhor.\n"
+"\n"
+"                Para obter informações sobre integrações, consulte nosso site aqui:\n"
+"                https://docs.datarobot.com/en/docs/more-info/how-to/index.html"
+
+msgid "DocsAssist Prediction Environment [{project_name}]"
+msgstr "Ambiente de previsão do DocsAssist [{project_name}]"
+
+msgid "DocsAssist Use Case"
+msgstr "Caso de uso do DocsAssist"
+
+msgid "Grading Custom Model"
+msgstr "Avaliação do modelo personalizado"
+
+msgid "Grading Deployment"
+msgstr "Avaliação da implantação"
+
+msgid "Grading Model [{project_name}]"
+msgstr "Modelo de avaliação [{project_name}]"
+
+msgid "I have detected that your question contains a prompt injection. Please rephrase your question."
+msgstr "Detectei que sua pergunta contém uma injeção de prompt. Por favor, reformule sua pergunta."
+
+msgid "I have detected that your question contains toxic language. Please rephrase your question."
+msgstr "Detectei que sua pergunta contém linguagem tóxica. Por favor, reformule sua pergunta."
+
+msgid "Keyword Guard Configuration"
+msgstr "Configuração do Keyword Guard"
+
+msgid "Keyword Guard Deployment"
+msgstr "Implementação do Keyword Guard"
+
+msgid "Keyword Guard Registered Model [{project_name}]"
+msgstr "Modelo registrado do Keyword Guard [{project_name}]"
+
+msgid "LLM Credential [{project_name}]"
+msgstr "Credencial LLM [{project_name}]"
+
+msgid "Prompt Injection Guard Configuration"
+msgstr "Configuração do Prompt Injection Guard"
+
+msgid "Prompt Injection Guard Deployment"
+msgstr "Implementação do Prompt Injection Guard"
+
+msgid "QA Application Source [{project_name}]"
+msgstr "Fonte do aplicativo de controle de qualidade [{project_name}]"
+
+msgid "QA Application [{project_name}]"
+msgstr "Aplicativo de controle de qualidade [{project_name}]"
+
+msgid "Toxicity Guard Configuration"
+msgstr "Configuração do Toxicity Guard"
+
+msgid "Toxicity Guard Deployment"
+msgstr "Implementação do Toxicity Guard"
+
+msgid "Use case for DocsAssist application"
+msgstr "Caso de uso do aplicativo DocsAssist"
+

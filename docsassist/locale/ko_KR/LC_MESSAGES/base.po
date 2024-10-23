@@ -1,0 +1,190 @@
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2024-10-08 20:10+0000\n"
+"Language: ko\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Repo: recipe-docsassist\n"
+"X-Segment-Count: 18\n"
+"X-Word-Count: 79\n"
+
+msgid "**Confidence Scores:**"
+msgstr "**자신감 점수:**"
+
+msgid "**Content:**"
+msgstr "**내용:**"
+
+msgid "**Correct**: the response sufficiently answers the question."
+msgstr "**정답**: 답변이 질문에 대한 충분한 답변을 제공합니다."
+
+msgid "**Digress**: the response includes irrelevant information or is not concise."
+msgstr "**빗나감**: 답변에 관련 없는 정보가 포함되어 있거나 간결하지 않습니다."
+
+msgid "**How would you rate this response?**"
+msgstr "**이 답변에 대해 어떻게 평가하시겠습니까?**"
+
+msgid "**Incomplete**: the response does not fully answer the question."
+msgstr "**불완전**: 답변이 질문에 완전히 답하지 않습니다."
+
+msgid "**Incorrect**: the response \"hallucinates\" or is the wrong answer to the question."
+msgstr "**부정확**: 응답이 '환각'을 일으키거나 질문에 대한 잘못된 답변입니다."
+
+msgid "**No Answer**: the response claims it cannot or will not answer the question."
+msgstr "**답변 없음**: 답변이 질문에 답변할 수 없거나 답변하지 않을 것이라고 주장합니다."
+
+msgid "**Reference {0}:**"
+msgstr "**참조 {0}:**"
+
+msgid "**Response Grade**: {0}"
+msgstr "**응답 등급**: {0}"
+
+msgid "**Source:** {0}"
+msgstr "**출처:** {0}"
+
+msgid "Correct"
+msgstr "정답"
+
+msgid "Digress"
+msgstr "빗나감"
+
+msgid "Incomplete"
+msgstr "불완전"
+
+msgid "Incorrect"
+msgstr "부정확"
+
+msgid "No Answer"
+msgstr "답변 없음"
+
+msgid "Thank you for your rating!"
+msgstr "평가해 주셔서 감사합니다!"
+
+msgid "User"
+msgstr "사용자"
+
+msgid "Assistant"
+msgstr "어시스턴트"
+
+msgid "Conversation History"
+msgstr "대화 기록"
+
+msgid "Getting AI response..."
+msgstr "AI 응답 받기..."
+
+msgid "Grade: {0}"
+msgstr "성적: {0}"
+
+msgid "Predicting grade..."
+msgstr "성적 예측하기..."
+
+msgid "Show Citations"
+msgstr "인용 표시"
+
+msgid "Your message"
+msgstr "귀하의 메시지"
+
+msgid "I'm sorry, but I don't have enough information to answer your question. Can you please provide more context or clarify your question?"
+msgstr "죄송하지만 귀하의 질문에 답변할 수 있는 정보가 충분하지 않습니다. 더 자세한 정보를 제공하거나 질문을 명확히 설명해 주시겠습니까?"
+
+msgid "Hello! How can I assist you today?"
+msgstr "안녕하세요! 오늘은 무엇을 도와드릴까요?"
+
+msgid ""
+"                Use the following pieces of context to answer the user's question.\n"
+"                If you don't know the answer, just say that you don't know, don't try to make up an answer.\n"
+"                ----------------\n"
+"                {context}"
+msgstr ""
+"다음 문맥을 활용하여 사용자의 질문에 답변하세요. 답을 모른다면 모른다고만 말하고 답을 지어내려고 하지 마세요.\n"
+"----------------\n"
+"{context}"
+
+msgid "RAG Custom Model"
+msgstr "RAG 커스텀 모델"
+
+msgid "RAG Dataset"
+msgstr "RAG 데이터 세트"
+
+msgid "RAG Deployment"
+msgstr "RAG 배포"
+
+msgid "RAG LLM Blueprint"
+msgstr "RAG LLM 블루프린트"
+
+msgid "RAG Playground"
+msgstr "RAG 플레이그라운드"
+
+msgid "RAG Registered Model [{project_name}]"
+msgstr "RAG 등록 모델 [{project_name}]"
+
+msgid "RAG Vector Database"
+msgstr "RAG 벡터 데이터베이스"
+
+msgid ""
+"                I have detected you are asking about another vendor. I hear they have great products, but I think DataRobot is the best.\n"
+"\n"
+"                For information on integrations, please check our website here:\n"
+"                https://docs.datarobot.com/en/docs/more-info/how-to/index.html"
+msgstr ""
+"                다른 공급업체에 대해 문의하신 것 같습니다. 훌륭한 제품을 보유하고 있다고 들었지만 DataRobot이 최고라고 생각합니다.\n"
+"\n"
+"                통합에 대한 자세한 내용은 여기에서 웹사이트를 참조하세요:\n"
+"                https://docs.datarobot.com/en/docs/more-info/how-to/index.html"
+
+msgid "DocsAssist Prediction Environment [{project_name}]"
+msgstr "DocsAssist 예측 환경[{project_name}]"
+
+msgid "DocsAssist Use Case"
+msgstr "DocsAssist 사용 사례"
+
+msgid "Grading Custom Model"
+msgstr "사용자 지정 모델 채점"
+
+msgid "Grading Deployment"
+msgstr "채점 배포"
+
+msgid "Grading Model [{project_name}]"
+msgstr "채점 모델 [{project_name}]"
+
+msgid "I have detected that your question contains a prompt injection. Please rephrase your question."
+msgstr "귀하의 질문에 프롬프트 주입이 포함되어 있음을 감지했습니다. 질문을 다시 작성해 주세요."
+
+msgid "I have detected that your question contains toxic language. Please rephrase your question."
+msgstr "귀하의 질문에 유해한 언어가 포함되어 있음을 감지했습니다. 질문을 다시 작성해 주세요."
+
+msgid "Keyword Guard Configuration"
+msgstr "키워드 가드 구성"
+
+msgid "Keyword Guard Deployment"
+msgstr "키워드 가드 배포"
+
+msgid "Keyword Guard Registered Model [{project_name}]"
+msgstr "키워드 가드 등록 모델 [{project_name}]"
+
+msgid "LLM Credential [{project_name}]"
+msgstr "LLM 자격증명 [{project_name}]"
+
+msgid "Prompt Injection Guard Configuration"
+msgstr "프롬프트 인젝션 가드 구성"
+
+msgid "Prompt Injection Guard Deployment"
+msgstr "프롬프트 인젝션 가드 배포"
+
+msgid "QA Application Source [{project_name}]"
+msgstr "QA 애플리케이션 소스 [{project_name}]"
+
+msgid "QA Application [{project_name}]"
+msgstr "QA 애플리케이션 [{project_name}]"
+
+msgid "Toxicity Guard Configuration"
+msgstr "독성 가드 구성"
+
+msgid "Toxicity Guard Deployment"
+msgstr "독성 가드 배포"
+
+msgid "Use case for DocsAssist application"
+msgstr "DocsAssist 애플리케이션 사용 사례"
+
+

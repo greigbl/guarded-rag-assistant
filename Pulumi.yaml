@@ -4,13 +4,8 @@ runtime:
   options:
     toolchain: pip
     virtualenv: .venv
-    # typechecker: mypy
 description: Guarded Rag Assistant
 config:
   pulumi:tags:
     value:
       pulumi:template: python
-# plugins:
-#   providers:
-#     - name: datarobot
-#       path: ../pulumi-testing/pulumi-datarobot/bin/

@@ -1,20 +1,31 @@
-# Copyright 2024 DataRobot, Inc. and its affiliates.
-# All rights reserved.
-# DataRobot, Inc.
-# This is proprietary source code of DataRobot, Inc. and its
-# affiliates.
-# Released under the terms of DataRobot Tool and Utility Agreement.
+# Copyright 2024 DataRobot, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 from __future__ import annotations
 
 from enum import Enum
-from typing import Type, Tuple, Optional
+from typing import Optional, Tuple, Type
+
 from pydantic import Field
 from pydantic_settings import (
     BaseSettings,
-    SettingsConfigDict,
     PydanticBaseSettingsSource,
+    SettingsConfigDict,
 )
+
+from docsassist.i18n import LanguageCode
+
 from .common.globals import (
     GlobalPredictionEnvironmentPlatforms,
     GlobalRuntimeEnvironment,
@@ -51,6 +62,9 @@ class CoreSettings(BaseSettings):
     application_type: ApplicationType = Field(
         description="Whether to use the default DR QA frontend or a user-provided frontend (DIY)",
     )
+    app_locale: LanguageCode = Field(
+        description="locale used for the application",
+    )
 
     model_config = SettingsConfigDict(env_prefix="MAIN_", case_sensitive=False)
 
@@ -76,6 +90,7 @@ core = CoreSettings(
     rag_documents="assets/datarobot_english_documentation_docsassist.zip",
     rag_type=RAGType.DR,
     application_type=ApplicationType.DR,
+    app_locale=LanguageCode.EN,
 )
 
 runtime_environment_moderations = GlobalRuntimeEnvironment.PYTHON_311_MODERATIONS.value

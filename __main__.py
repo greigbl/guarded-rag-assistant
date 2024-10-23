@@ -1,9 +1,17 @@
-# Copyright 2024 DataRobot, Inc. and its affiliates.
-# All rights reserved.
-# DataRobot, Inc.
-# This is proprietary source code of DataRobot, Inc. and its
-# affiliates.
-# Released under the terms of DataRobot Tool and Utility Agreement.
+# Copyright 2024 DataRobot, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import os
 import pathlib
 
@@ -11,10 +19,11 @@ import pulumi
 import pulumi_datarobot as datarobot
 
 from docsassist.deployments import (
+    app_env_name,
     grading_deployment_env_name,
     rag_deployment_env_name,
-    app_env_name,
 )
+from docsassist.i18n import LocaleSettings
 from infra import (
     settings_app_infra,
     settings_grader,
@@ -30,6 +39,8 @@ from infra.components.dr_credential import DRCredential
 from infra.components.rag_custom_model import RAGCustomModel
 from infra.settings_global_guardrails import global_guardrails
 from infra.settings_llm_credential import credential, credential_args
+
+LocaleSettings().setup_locale()
 
 check_feature_flags(pathlib.Path("infra/feature_flag_requirements.yaml"))
 
@@ -52,7 +63,6 @@ else:
         "Guarded RAG Prediction Environment [PRE-EXISTING]",
         settings_main.default_prediction_server_id,
     )
-
 
 llm_credential = DRCredential(
     resource_name=f"Generic LLM Credential [{settings_main.project_name}]",
@@ -154,6 +164,9 @@ app_runtime_parameters = [
     datarobot.ApplicationSourceRuntimeParameterValueArgs(
         key=grading_deployment_env_name, type="deployment", value=grading_deployment.id
     ),
+    datarobot.ApplicationSourceRuntimeParameterValueArgs(
+        key="APP_LOCALE", type="string", value=LocaleSettings().app_locale
+    ),
 ]
 
 if settings_main.core.application_type == settings_main.ApplicationType.DIY:
@@ -168,7 +181,7 @@ if settings_main.core.application_type == settings_main.ApplicationType.DIY:
 elif settings_main.core.application_type == settings_main.ApplicationType.DR:
     qa_application = datarobot.QaApplication(  # type: ignore[assignment]
         resource_name=settings_app_infra.app_resource_name,
-        name="Guarded RAG Assistant",
+        name=f"Guarded RAG Assistant [{settings_main.project_name}]",
         deployment_id=rag_deployment.deployment_id,
         opts=pulumi.ResourceOptions(delete_before_replace=True),
     )

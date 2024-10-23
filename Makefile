@@ -11,6 +11,10 @@ fix-licenses: apply-copyright
 
 check-licenses: copyright-check
 
+fix-lint:
+	ruff format .
+	ruff check . --fix
+
 lint:
 	ruff format --check .
 	ruff check .

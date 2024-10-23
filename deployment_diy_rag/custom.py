@@ -1,9 +1,16 @@
-# Copyright 2024 DataRobot, Inc. and its affiliates.
-# All rights reserved.
-# DataRobot, Inc.
-# This is proprietary source code of DataRobot, Inc. and its
-# affiliates.
-# Released under the terms of DataRobot Tool and Utility Agreement.
+# Copyright 2024 DataRobot, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 # mypy: ignore-errors
 import json
@@ -12,6 +19,7 @@ import sys
 import traceback
 
 import pandas as pd
+import yaml
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains.history_aware_retriever import (
     create_history_aware_retriever,
@@ -31,11 +39,10 @@ from langchain_core.runnables import Runnable
 from langchain_core.vectorstores import VectorStoreRetriever
 from langchain_openai import AzureChatOpenAI
 from pandas import DataFrame
-import yaml
 
 sys.path.append("../")
 from docsassist.credentials import AzureOpenAICredentials
-from docsassist.schema import RAGModelSettings
+from docsassist.schema import PROMPT_COLUMN_NAME, TARGET_COLUMN_NAME, RAGModelSettings
 
 
 def get_chain(
@@ -116,10 +123,10 @@ def score(data: pd.DataFrame, model: tuple[Runnable, RAGModelSettings], **kwargs
 
     chain, model_settings = model
 
-    full_result_dict: dict[str, list] = {model_settings.target_feature_name: []}
+    full_result_dict: dict[str, list] = {TARGET_COLUMN_NAME: []}
 
     for i, row in data.iterrows():
-        question = row[model_settings.prompt_feature_name]
+        question = row[PROMPT_COLUMN_NAME]
         chat_history = []
         if "messages" in row:
             messages = row["messages"]
@@ -140,9 +147,7 @@ def score(data: pd.DataFrame, model: tuple[Runnable, RAGModelSettings], **kwargs
                         "chat_history": chat_history,
                     }
                 )
-            full_result_dict[model_settings.target_feature_name].append(
-                chain_output["answer"]
-            )
+            full_result_dict[TARGET_COLUMN_NAME].append(chain_output["answer"])
             for i, doc in enumerate(chain_output["context"]):
                 if f"CITATION_CONTENT_{i}" not in full_result_dict:
                     full_result_dict[f"CITATION_CONTENT_{i}"] = []
@@ -159,8 +164,6 @@ def score(data: pd.DataFrame, model: tuple[Runnable, RAGModelSettings], **kwargs
                 )
 
         except Exception:
-            full_result_dict[model_settings.target_feature_name].append(
-                traceback.format_exc()
-            )
+            full_result_dict[TARGET_COLUMN_NAME].append(traceback.format_exc())
 
     return DataFrame(full_result_dict)

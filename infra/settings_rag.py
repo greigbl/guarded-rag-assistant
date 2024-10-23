@@ -1,21 +1,31 @@
-# Copyright 2024 DataRobot, Inc. and its affiliates.
-# All rights reserved.
-# DataRobot, Inc.
-# This is proprietary source code of DataRobot, Inc. and its
-# affiliates.
-# Released under the terms of DataRobot Tool and Utility Agreement.
+# Copyright 2024 DataRobot, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 from __future__ import annotations
 
-import pulumi
 import pathlib
 import textwrap
 
 import datarobot as dr
+import pulumi
 import pulumi_datarobot as datarobot
 from jinja2 import BaseLoader, Environment
 from pydantic import BaseModel
 
-from docsassist.schema import RAGModelSettings
+from docsassist.i18n import gettext
+from docsassist.schema import TARGET_COLUMN_NAME, RAGModelSettings
+
 from .common.globals import GlobalLLM
 from .common.schema import (
     ChunkingParameters,
@@ -37,12 +47,11 @@ from .settings_main import (
     runtime_environment_moderations,
 )
 
-
 custom_model_args = CustomModelArgs(
     resource_name=f"Guarded RAG Custom Model [{project_name}]",
     name="Guarded RAG Assistant",  # built-in QA app uses this as the AI's name
     base_environment_id=runtime_environment_moderations.id,
-    target_name="completion",
+    target_name=TARGET_COLUMN_NAME,
     target_type=dr.enums.TARGET_TYPE.TEXT_GENERATION,
     opts=pulumi.ResourceOptions(delete_before_replace=True),
 )
@@ -60,10 +69,12 @@ deployment_args = DeploymentArgs(
         auto_generate_id=False,
         required_in_prediction_requests=True,
     ),
-    predictions_settings=None
-    if default_prediction_server_id
-    else datarobot.DeploymentPredictionsSettingsArgs(
-        min_computes=0, max_computes=1, real_time=True
+    predictions_settings=(
+        None
+        if default_prediction_server_id
+        else datarobot.DeploymentPredictionsSettingsArgs(
+            min_computes=0, max_computes=1, real_time=True
+        )
     ),
     predictions_data_collection_settings=datarobot.DeploymentPredictionsDataCollectionSettingsArgs(
         enabled=True,
@@ -80,6 +91,7 @@ if core.rag_type == RAGType.DR:
         resource_name=f"Guarded RAG Documents Dataset [{project_name}]",
         file_path=core.rag_documents,
     )
+
     vector_database_args = VectorDatabaseArgs(
         resource_name=f"Guarded RAG Vector DB [{project_name}]",
         chunking_parameters=ChunkingParameters(
@@ -95,11 +107,11 @@ if core.rag_type == RAGType.DR:
         llm_settings=LLMSettings(
             max_completion_length=512,
             system_prompt=textwrap.dedent(
-                """\
+                gettext("""\
                 Use the following pieces of context to answer the user's question.
                 If you don't know the answer, just say that you don't know, don't try to make up an answer.
                 ----------------
-                {context}"""
+                {context}""")
             ),
         ),
         vector_database_settings=VectorDatabaseSettings(
@@ -131,9 +143,11 @@ elif core.rag_type == RAGType.DIY:
         """Prepare list of files to be uploaded to DIY RAG deployment."""
         llm_runtime_parameter_specs = "\n".join(
             [
-                textwrap.dedent(f"""\
+                textwrap.dedent(
+                    f"""\
                 - fieldName: {param.key}
-                  type: {param.type}""")
+                  type: {param.type}"""
+                )
                 for param in runtime_parameter_values
             ]
         )

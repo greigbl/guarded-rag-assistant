@@ -1,9 +1,16 @@
-# Copyright 2024 DataRobot, Inc. and its affiliates.
-# All rights reserved.
-# DataRobot, Inc.
-# This is proprietary source code of DataRobot, Inc. and its
-# affiliates.
-# Released under the terms of DataRobot Tool and Utility Agreement.
+# Copyright 2024 DataRobot, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 # disable mypy:
 # type: ignore
@@ -24,7 +31,6 @@ from datarobot_drum.runtime_parameters.runtime_parameters import RuntimeParamete
 
 sys.path.append("../")
 from docsassist.schema import RAGInput
-
 from infra.components.dr_credential import DRCredential
 
 
@@ -85,7 +91,7 @@ def test_input2(output_dir: Path) -> Path:
             },
         ],
     )
-    data = rag_input.model_dump(mode="json")
+    data = rag_input.model_dump(mode="json", by_alias=True)
     data["messages"] = json.dumps(data["messages"])
     pd.DataFrame.from_records([data]).to_csv(
         output_dir / "test_input2.csv",
@@ -100,7 +106,7 @@ def test_input3(output_dir: Path) -> Path:
         association_id="id42",
         messages=[],
     )
-    pd.DataFrame.from_records([rag_input.model_dump()]).to_csv(
+    pd.DataFrame.from_records([rag_input.model_dump(by_alias=True)]).to_csv(
         output_dir / "test_input3.csv"
     )
     return str(output_dir / "test_input3.csv")
@@ -163,7 +169,7 @@ def run_drum(
             triton_host="http://localhost",
             triton_http_port="8000",
             triton_grpc_port="8001",
-            target_type=None,
+            target_type="textgeneration",
             query=None,
             content_type=None,
             user_secrets_mount_path=None,

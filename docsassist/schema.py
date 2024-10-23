@@ -1,22 +1,35 @@
-# Copyright 2024 DataRobot, Inc. and its affiliates.
-# All rights reserved.
-# DataRobot, Inc.
-# This is proprietary source code of DataRobot, Inc. and its
-# affiliates.
-# Released under the terms of DataRobot Tool and Utility Agreement.
+# Copyright 2024 DataRobot, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 from __future__ import annotations
 
 import math
 import re
 from typing import Any, Dict, List, Literal, Optional, get_args
+
 import pandas as pd
-from pydantic import BaseModel, ConfigDict, Field, model_validator
 from openai.types.chat.chat_completion_message_param import ChatCompletionMessageParam
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+Grade = Literal["Correct", "Incorrect", "Incomplete", "Digress", "No Answer"]
+
+PROMPT_COLUMN_NAME: str = "promptText"
+TARGET_COLUMN_NAME: str = "resultText"
 
 
 class RAGInput(BaseModel):
-    promptText: str
+    promptText: str = Field(serialization_alias=PROMPT_COLUMN_NAME)
     association_id: str
     messages: Optional[list[ChatCompletionMessageParam]] = []
 
@@ -31,11 +44,6 @@ class Reference(BaseModel):
     metadata: ReferenceMetadata
 
 
-Grade = Literal["Correct", "Incorrect", "Incomplete", "Digress", "No Answer"]
-
-PROMPT_COLUMN_NAME: str = "promptText"
-
-
 class DocumentModel(BaseModel):
     page_content: str
     metadata: Dict[str, Any] = {}
@@ -46,9 +54,7 @@ class RAGModelSettings(BaseModel):
     max_retries: int
     request_timeout: int
     stuff_prompt: str
-    target_feature_name: str
     temperature: float
-    prompt_feature_name: str = PROMPT_COLUMN_NAME
 
     @classmethod
     def filename(cls) -> str:
@@ -58,7 +64,7 @@ class RAGModelSettings(BaseModel):
 class RAGOutput(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    completion: str
+    completion: str = Field(validation_alias=TARGET_COLUMN_NAME)
     references: List[Reference]
     usage: Optional[Dict[str, Any]] = None
     question: Optional[str] = None
