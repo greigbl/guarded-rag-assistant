@@ -84,7 +84,7 @@ project_name = get_stack()
 core = CoreSettings(
     rag_documents="assets/datarobot_english_documentation_docsassist.zip",
     rag_type=RAGType.DR,
-    application_type=ApplicationType.DR,
+    application_type=ApplicationType.DIY,
 )
 
 runtime_environment_moderations = GlobalRuntimeEnvironment.PYTHON_311_MODERATIONS.value

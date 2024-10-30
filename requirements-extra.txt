@@ -5,7 +5,6 @@ datarobot>=3.5.2,<3.6
 datarobot-predict>=1.9.2,<1.10
 datarobotx-idp>=0.2.11,<0.3
 
-datarobot-drum>=1.11.3,<1.13
 # Constrained by datarobot-drum
 pandas>=2.0.3,<3
 

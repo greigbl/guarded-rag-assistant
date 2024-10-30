@@ -25,13 +25,29 @@ from typing import Any, Dict
 import pandas as pd
 import pulumi_datarobot as datarobot
 import pytest
-from datarobot_drum.drum.drum import CMRunner
-from datarobot_drum.drum.runtime import DrumRuntime
-from datarobot_drum.runtime_parameters.runtime_parameters import RuntimeParametersLoader
+
+try:
+    from datarobot_drum.drum.drum import CMRunner
+    from datarobot_drum.drum.runtime import DrumRuntime
+    from datarobot_drum.runtime_parameters.runtime_parameters import (
+        RuntimeParametersLoader,
+    )
+except ImportError:
+    pass
 
 sys.path.append("../")
 from docsassist.schema import RAGInput
 from infra.components.dr_credential import DRCredential
+
+
+@pytest.fixture
+def drum_installed():
+    try:
+        import datarobot_drum  # noqa: F401
+    except ImportError:
+        pytest.skip(
+            "DIY RAG custom model tests requires datarobot_drum to be installed."
+        )
 
 
 class ExtendedDRCredential(DRCredential):
@@ -202,6 +218,7 @@ def test_diy_rag_custom_model(
     test_input3: Path,
     output_dir: Path,
     rag_mode: str,
+    drum_installed,
 ) -> None:
     from infra.settings_rag import custom_model_args
 

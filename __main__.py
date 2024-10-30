@@ -84,6 +84,7 @@ global_guard_deployments = [
             name=guard.registered_model_name,
         ).version_id,
         prediction_environment_id=prediction_environment.id,
+        use_case_ids=[use_case.id],
         **guard.deployment_args.model_dump(),
     )
     for guard in global_guardrails
@@ -136,6 +137,7 @@ elif settings_main.core.rag_type == settings_main.RAGType.DIY:
         ),
         runtime_parameter_values=llm_credential.runtime_parameter_values,
         guard_configurations=guard_configurations,
+        use_case_ids=[use_case.id],
         **settings_rag.custom_model_args.model_dump(mode="json", exclude_none=True),
     )
 else:
@@ -177,6 +179,7 @@ if settings_main.core.application_type == settings_main.ApplicationType.DIY:
     qa_application = datarobot.CustomApplication(
         resource_name=settings_app_infra.app_resource_name,
         source_version_id=application_source.version_id,
+        use_case_ids=[use_case.id],
     )
 elif settings_main.core.application_type == settings_main.ApplicationType.DR:
     qa_application = datarobot.QaApplication(  # type: ignore[assignment]

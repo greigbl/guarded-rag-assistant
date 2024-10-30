@@ -72,6 +72,7 @@ class RAGCustomModel(pulumi.ComponentResource):
             source_llm_blueprint_id=self.llm_blueprint.id,
             runtime_parameter_values=runtime_parameter_values,
             guard_configurations=guard_configurations,
+            use_case_ids=[use_case.id],
             **custom_model_args.model_dump(mode="json", exclude_none=True),
             opts=pulumi.ResourceOptions(parent=self),
         )
