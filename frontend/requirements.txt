@@ -3,7 +3,7 @@ pandas==2.2.0
 requests==2.32.0
 streamlit==1.37.0
 langchain-core==0.2.19
-datarobot-predict==1.9.2
+datarobot-predict>=1.9.6
 pydantic-settings==2.5.2
 pydantic==2.9.2
 openai==1.47.1

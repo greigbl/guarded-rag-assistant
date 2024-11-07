@@ -35,7 +35,7 @@ cycler==0.12.1
 dataclasses-json==0.6.7
 datarobot==3.5.2
 datarobot-drum==1.12.2
-datarobot-predict==1.9.5
+datarobot-predict==1.9.6
 datarobotx-idp==0.2.13
 debugpy==1.8.7
 decorator==5.1.1

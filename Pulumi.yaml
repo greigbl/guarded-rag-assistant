@@ -1,9 +1,6 @@
 name: guarded-rag-assistant
 runtime:
   name: python
-  options:
-    toolchain: pip
-    virtualenv: .venv
 description: Guarded Rag Assistant
 config:
   pulumi:tags:

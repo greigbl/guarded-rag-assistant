@@ -33,7 +33,7 @@ custom_model_args = CustomModelArgs(
         ("deployment_grading/requirements.txt", "requirements.txt"),
         ("docsassist/schema.py", "docsassist/schema.py"),
     ],
-    base_environment_id=GlobalRuntimeEnvironment.PYTHON_39_GENAI.value.id,
+    base_environment_id=GlobalRuntimeEnvironment.PYTHON_311_GENAI.value.id,
     target_type="Multiclass",
     target_name="grade",
     class_labels=list(get_args(Grade)),

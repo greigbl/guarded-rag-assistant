@@ -4,23 +4,35 @@ The guarded RAG assistant is an easily customizable recipe for building a RAG-po
 
 In addition to creating a hosted, shareable user interface, the guarded RAG assistant provides:
 
-* Regex and prompt-injection guardrails.
-* A predictive sidecar model that evaluates response quality.
-* GenAI-focused custom metrics.
+* Business logic and LLM based guardrails.
+* A predictive secondary model that evaluates response quality.
+* GenAI-focused [custom metrics][custom-metrics].
 * DataRobot MLOps hosting, monitoring, and governing the individual backend deployments.
+
+> [!WARNING]
+> Application Templates are intended to be starting points that provide guidance on how to develop, serve, and maintain AI applications.
+> They require a developer or data scientist to adapt, and modify them to business requirements before being put into production.
 
 ![Using the Guarded RAG Assistant](https://s3.amazonaws.com/datarobot_public/drx/recipe_gifs/launch_gifs/guardedraghq-small.gif)
 
+[custom-metrics]: https://docs.datarobot.com/en/docs/workbench/nxt-console/nxt-monitoring/nxt-custom-metrics.html
+
 ## Setup
 
+1. If `pulumi` is not already installed, install the CLI following instructions [here](https://www.pulumi.com/docs/iac/download-install/). 
+   After installing for the first time, restart your terminal and run:
+   ```
+   pulumi login --local  # omit --local to use Pulumi Cloud (requires separate account)
+   ```
 
-1. Clone the template repository.
-   
+2. Clone the template repository.
+
    ```
    git clone https://github.com/datarobot-community/guarded-rag-assistant.git
+   cd recipe-docsassist
    ```
 
-2. Create the file `.env` in the root directory of the repo and populate your credentials.
+3. Rename the file `.env.template` to `.env` in the root directory of the repo and populate your credentials.
 
    ```
    DATAROBOT_API_TOKEN=...
@@ -32,50 +44,14 @@ In addition to creating a hosted, shareable user interface, the guarded RAG assi
    PULUMI_CONFIG_PASSPHRASE=...  # required, choose an alphanumeric passphrase to be used for encrypting pulumi config
    ```
    
-3. Set environment variables using your `.env` file. Use the helper script provided below:
+4. In a terminal run:
    ```
-   source set_env.sh
-   # on Windows: set_env.bat or Set-Env.ps1
-   ```
-   This script exports environment variables from `.env` and activate the virtual 
-   environment in `.venv/` (if present).
-
-5. If you're a first-time user, install the Pulumi CLI by following the instructions [here](#details) before proceeding with this workflow.
-
-
-6. Create a new stack for your project (update the placeholder `YOUR_PROJECT_NAME`).
-   ```
-   pulumi stack init YOUR_PROJECT_NAME
+   python quickstart.py YOUR_PROJECT_NAME  # Windows users may have to use `py` instead of `python`
    ```
 
-7. Provision all resources and install dependencies in a new virtual environment located in `.venv/`.
-   ```
-   pulumi up
-   ```
+Advanced users desiring control over virtual environment creation, dependency installation, environment variable setup
+and `pulumi` invocation see [here](#setup-for-advanced-users).
 
-### Details
-
-Instructions for installing Pulumi are [here](https://www.pulumi.com/docs/iac/download-install/). In many cases this can be done
-with the code below:
-
-```
-curl -fsSL https://get.pulumi.com | sh
-```
-
-Restart your terminal.
-
-```
-pulumi login --local
-
-source set_env.sh
-# on Windows: set_env.bat or Set-Env.ps1
-```
-
-Python must be installed for this project to run. By default, pulumi will use the Python binary aliased to `python3` to create a new virtual environment. If you wish to self-manage your virtual environment, delete the `virtualenv` and `toolchain` keys from `Pulumi.yaml` before running `pulumi up`. For projects that will be maintained, DataRobot recommends forking the repo so upstream fixes and improvements can be merged in the future.
-
-### Feature flags
-
-This app template requires certain feature flags to be enabled or disabled in your DataRobot account. The required feature flags can be found in [infra/feature_flag_requirements.yaml](infra/feature_flag_requirements.yaml). Contact your DataRobot representative or administrator for information on enabling the feature.
 
 ## Architecture Overview
 ![Guarded RAG Architecture](https://s3.amazonaws.com/datarobot_public/drx/recipe_gifs/rag_architecture.svg)
@@ -99,7 +75,7 @@ This app template requires certain feature flags to be enabled or disabled in yo
    ```
 2. Update your environment and install `google-auth`.
    ```
-   source set_env.sh
+   source set_env.sh  # On windows use `set_env.bat`
    pip install google-auth
    ```
 3. Update the credential type to be provisioned in `infra/settings_llm_credential.py`.
@@ -119,18 +95,18 @@ This app template requires certain feature flags to be enabled or disabled in yo
    
 ### Fully custom front-end
 1. Edit `infra/settings_main.py` and update `application_type` to `ApplicationType.DIY`
-   - Optionally, update `APP_LOCALE` in `docsassist/i18n.py` to toggle the language. 
-     Supported locales include French (fr_FR), Spanish (es_LA), Korean (ko_KR), and 
+   - Optionally, update `APP_LOCALE` in `docsassist/i18n.py` to toggle the language.
+     Supported locales include French (fr_FR), Spanish (es_LA), Korean (ko_KR), and
      Brazilian Portuguese (pt_BR) in addition to the English default (en_US).
 2. Run `pulumi up` to update your stack with the example custom Streamlit frontend,
 3. After provisioning the stack at least once, you can also edit and test the Streamlit
-   front-end locally using `streamlit run app.py` from the `frontend/` directory (don't 
-   forget to initialize your environment using `source set_env.sh`).
+   front-end locally using `streamlit run app.py` from the `frontend/` directory (don't
+   forget to initialize your environment using `set_env`).
 
 ### Fully custom RAG chunking, vectorization and retrieval
 1. Install additional requirements (e.g. FAISS, HuggingFace).
    ```
-   source set_env.sh
+   source set_env.sh  # On windows use `set_env.bat`
    pip install -r requirements-extra.txt
    ```
 2. Edit `infra/settings_main.py` and update `rag_type` to `RAGType.DIY`.
@@ -149,3 +125,24 @@ This app template requires certain feature flags to be enabled or disabled in yo
 ```
 pulumi down
 ```
+
+## Setup for advanced users
+For manual control over the setup process adapt the following steps for MacOS/Linux to your environent:
+```
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+source set_env.sh
+pulumi stack init YOUR_PROJECT_NAME
+pulumi up 
+```
+e.g. for Windows/conda/cmd.exe this would be:
+```
+conda create --prefix .venv pip
+conda activate .\.venv
+pip install -r requirements.txt
+set_env.bat
+pulumi stack init YOUR_PROJECT_NAME
+pulumi up 
+```
+For projects that will be maintained, DataRobot recommends forking the repo so upstream fixes and improvements can be merged in the future.
