@@ -30,6 +30,7 @@ from openai.types.chat.chat_completion_user_message_param import (
 )
 from settings import app_settings
 from streamlit.delta_generator import DeltaGenerator
+from streamlit_theme import st_theme
 
 sys.path.append("../")
 from docsassist import predict
@@ -53,7 +54,12 @@ st.set_page_config(
 with open("./style.css") as f:
     css = f.read()
 
-with open("./DataRobot.svg") as f:
+theme = st_theme()
+logo = "./DataRobot_white.svg"
+if theme and theme.get("base") == "light":
+    logo = "./DataRobot_black.svg"
+
+with open(logo) as f:
     svg = f.read()
 
 st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)

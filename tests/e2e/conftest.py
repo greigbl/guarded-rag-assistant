@@ -96,9 +96,7 @@ def check_if_logged_in(browser: webdriver.Chrome) -> bool:
 
     for by, value in selectors:
         try:
-            WebDriverWait(browser, 10).until(
-                EC.presence_of_element_located((by, value))
-            )
+            WebDriverWait(browser, 2).until(EC.presence_of_element_located((by, value)))
             break
         except Exception:
             continue

@@ -54,7 +54,17 @@ and `pulumi` invocation see [here](#setup-for-advanced-users).
 
 
 ## Architecture Overview
+
 ![Guarded RAG Architecture](https://s3.amazonaws.com/datarobot_public/drx/recipe_gifs/rag_architecture.svg)
+
+## Why build AI Apps with DataRobot App Templates?
+
+App Templates transform your AI projects from notebooks to production-ready applications. Too often, getting models into production means rewriting code, juggling credentials, and coordinating with multiple tools & teams just to make simple changes. DataRobot's composable AI apps framework eliminates these bottlenecks, letting you spend more time experimenting with your ML and app logic and less time wrestling with plumbing and deployment.
+- Start Building in Minutes: Deploy complete AI applications instantly, then customize AI logic or frontend independently - no architectural rewrites needed.
+- Keep Working Your Way: Data scientists keep working in notebooks, developers in IDEs, and configs stay isolated - update any piece without breaking others.
+- Iterate With Confidence: Make changes locally and deploy with confidence - spend less time writing and troubleshooting plumbing, more time improving your app.
+
+Each template provides an end-to-end AI architecture, from raw inputs to deployed application, while remaining highly customizable for specific business requirements.
 
 ## Make changes
 
@@ -96,8 +106,7 @@ and `pulumi` invocation see [here](#setup-for-advanced-users).
 ### Fully custom front-end
 1. Edit `infra/settings_main.py` and update `application_type` to `ApplicationType.DIY`
    - Optionally, update `APP_LOCALE` in `docsassist/i18n.py` to toggle the language.
-     Supported locales include French (fr_FR), Spanish (es_LA), Korean (ko_KR), and
-     Brazilian Portuguese (pt_BR) in addition to the English default (en_US).
+     Supported locales include Japanese (ja_JP) in addition to the English default (en_US).
 2. Run `pulumi up` to update your stack with the example custom Streamlit frontend,
 3. After provisioning the stack at least once, you can also edit and test the Streamlit
    front-end locally using `streamlit run app.py` from the `frontend/` directory (don't
@@ -111,7 +120,7 @@ and `pulumi` invocation see [here](#setup-for-advanced-users).
    ```
 2. Edit `infra/settings_main.py` and update `rag_type` to `RAGType.DIY`.
 3. Run `pulumi up` to update your stack with the example custom RAG logic.
-4. Edit `data_science/build_rag.ipynb` to customize the doc chunking, vectorization logic.
+4. Edit `notebooks/build_rag.ipynb` to customize the doc chunking, vectorization logic.
 5. Edit `deployment_diy_rag/custom.py` to customize the retrieval logic & LLM call.
 6. Run `pulumi up` to update your stack.
 

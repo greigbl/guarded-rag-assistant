@@ -13,6 +13,7 @@ pydantic-settings>=2.5.2,<2.6
 eval_type_backport>=0.2.0,<0.3
 
 streamlit>=1.39.0,<2
+st-theme>=1.2.3,<2
 joblib>=1.4.2,<2
 
 jupyterlab>=4.2.5,<5
