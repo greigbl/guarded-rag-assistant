@@ -29,7 +29,7 @@ In addition to creating a hosted, shareable user interface, the guarded RAG assi
 
    ```
    git clone https://github.com/datarobot-community/guarded-rag-assistant.git
-   cd recipe-docsassist
+   cd guarded-rag-assistant
    ```
 
 3. Rename the file `.env.template` to `.env` in the root directory of the repo and populate your credentials.
