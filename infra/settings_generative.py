@@ -25,7 +25,10 @@ from pydantic import BaseModel
 
 from docsassist.i18n import gettext
 from docsassist.schema import TARGET_COLUMN_NAME, RAGModelSettings, RAGType
-from infra.common.globals import GlobalLLM
+from infra.common.globals import (
+    GlobalCustomModelResourceBundles,
+    GlobalLLM,
+)
 
 from .common.schema import (
     ChunkingParameters,
@@ -44,6 +47,7 @@ from .settings_main import (
     core,
     default_prediction_server_id,
     project_name,
+    runtime_environment_moderations,
 )
 
 LLM = GlobalLLM.AZURE_OPENAI_GPT_4_O_MINI
@@ -54,13 +58,14 @@ custom_model_args = CustomModelArgs(
     name="Guarded RAG Assistant",  # built-in QA app uses this as the AI's name
     target_name=TARGET_COLUMN_NAME,
     target_type=dr.enums.TARGET_TYPE.TEXT_GENERATION,
+    resource_bundle_id=GlobalCustomModelResourceBundles.CPU_M.value.id,
+    base_environment_id=runtime_environment_moderations.id,
     opts=pulumi.ResourceOptions(delete_before_replace=True),
 )
 
 registered_model_args = RegisteredModelArgs(
     resource_name=f"Guarded RAG Registered Model [{project_name}]",
 )
-
 
 deployment_args = DeploymentArgs(
     resource_name=f"Guarded RAG Deployment [{project_name}]",
@@ -101,7 +106,7 @@ if core.rag_type == RAGType.DR:
     )
 
     system_prompt = """\
-                You are a helpful assistant, helping users answer questions about some document(s). 
+                You are a helpful assistant, helping users answer questions about some document(s).
 
                 You will be given extracts from the document(s) to help answer the question.
 

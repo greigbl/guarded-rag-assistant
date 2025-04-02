@@ -14,14 +14,12 @@
 
 from __future__ import annotations
 
-import math
-import re
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple, Type
 
 import pandas as pd
 from openai.types.chat.chat_completion_message_param import ChatCompletionMessageParam
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field
 from pydantic_settings import (
     BaseSettings,
     PydanticBaseSettingsSource,
@@ -49,14 +47,10 @@ class RAGInput(BaseModel):
     messages: Optional[list[ChatCompletionMessageParam]] = []
 
 
-class ReferenceMetadata(BaseModel):
-    source: str
-    page: Optional[int] = None
-
-
 class Reference(BaseModel):
-    page_content: str
-    metadata: ReferenceMetadata
+    content: str
+    link: str | None = None
+    metadata: dict[str, Any]
 
 
 class DocumentModel(BaseModel):
@@ -79,58 +73,10 @@ class RAGModelSettings(BaseModel):
 class RAGOutput(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    completion: str = Field(validation_alias=TARGET_COLUMN_NAME)
+    completion: str
     references: List[Reference]
     usage: Optional[Dict[str, Any]] = None
     question: Optional[str] = None
-
-    @model_validator(mode="before")
-    def parse_references(cls, values: Any) -> Any:
-        if "references" in values:
-            return values
-
-        references: List[Dict[str, Any]] = []
-        citation_pattern = re.compile(r"CITATION_(\w+)_(\d+)")
-        target_name = values.pop("__target_name", None)
-
-        for key, value in values.items():
-            if isinstance(value, float) and math.isnan(value):
-                continue
-            match = citation_pattern.match(key)
-            if match:
-                citation_type, index = match.groups()
-                index = int(index)  # Convert to 0-based index
-
-                if len(references) <= index:
-                    references.extend([{} for _ in range(index - len(references) + 1)])
-
-                if citation_type == "CONTENT":
-                    references[index]["page_content"] = value
-                elif citation_type == "SOURCE":
-                    if "metadata" not in references[index]:
-                        references[index]["metadata"] = {}
-                    references[index]["metadata"]["source"] = value
-                elif citation_type == "PAGE":
-                    if "metadata" not in references[index]:
-                        references[index]["metadata"] = {}
-                    try:
-                        value = float(value)
-                    except Exception:
-                        value = 0
-                    references[index]["metadata"]["page"] = value
-
-        # Find the answer field
-        if target_name:
-            answer_field: str | None = f"{target_name}_PREDICTION"
-        else:
-            answer_field = next(
-                (k for k in values.keys() if k.endswith("_PREDICTION")), None
-            )
-
-        if answer_field:
-            values["answer"] = values.pop(answer_field)
-        values["references"] = [Reference(**ref) for ref in references if ref]
-        return values
 
     def to_dataframe(self) -> pd.DataFrame:
         input_data = {
@@ -139,10 +85,10 @@ class RAGOutput(BaseModel):
         }
 
         for i, ref in enumerate(self.references, start=1):
-            input_data[f"context{i}"] = [ref.page_content]
-            input_data[f"source{i}"] = [ref.metadata.source]
-            if ref.metadata.page:
-                input_data[f"page{i}"] = [str(ref.metadata.page)]
+            input_data[f"context{i}"] = [ref.content]
+            input_data[f"source{i}"] = [ref.metadata["source"]]
+            if "page" in ref.metadata:
+                input_data[f"page{i}"] = [str(ref.metadata["page"])]
 
         if self.usage:
             for k, v in self.usage.items():

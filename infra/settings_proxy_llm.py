@@ -13,6 +13,8 @@
 # limitations under the License.
 from __future__ import annotations
 
+import os
+
 import datarobot as dr
 import pulumi
 import pulumi_datarobot as datarobot
@@ -30,8 +32,7 @@ from .settings_main import (
     runtime_environment_moderations,
 )
 
-# Override prompt column name here in case it's different from the default and prompt column has not been set on the deployment
-TEXTGEN_DEPLOYMENT_PROMPT_COLUMN_NAME = None
+CHAT_MODEL_NAME = os.getenv("CHAT_MODEL_NAME")
 
 custom_model_args = CustomModelArgs(
     resource_name=f"Guarded RAG Proxy LLM Custom Model [{project_name}]",

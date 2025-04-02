@@ -12,24 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
 import logging
-import time
-import uuid
 from dataclasses import dataclass
-from datetime import datetime
-from typing import Iterable, Tuple
 
 import datarobot as dr
-import pandas as pd
 from datarobot.models.deployment.deployment import Deployment
-from datarobot_predict.deployment import PredictionResult, predict
+from openai import OpenAI
 from openai.types.chat.chat_completion_message_param import ChatCompletionMessageParam
+from openai.types.chat.chat_completion_user_message_param import (
+    ChatCompletionUserMessageParam,
+)
 from pydantic import ValidationError
 
 from docsassist.deployments import RAGDeployment  # noqa: E402
 from docsassist.schema import (  # noqa: E402
-    RAGInput,
     RAGOutput,
 )
 
@@ -53,68 +49,26 @@ class DeploymentInfo:
     target_name: str
 
 
-def _get_deployment_info(deployment_id: str) -> DeploymentInfo:
-    deployment = dr.Deployment.get(deployment_id)
-    target_name = deployment.model["target_name"]  # type: ignore[index]
-    return DeploymentInfo(deployment, str(target_name))
-
-
-def _predict_with_retry(
-    deployment: Deployment,
-    data_frame: pd.DataFrame,
-    max_wait_seconds: int = 300,
-    retry_interval_seconds: int = 5,
-) -> PredictionResult:
-    start_time = time.time()
-    while True:
-        try:
-            prediction = predict(deployment, data_frame=data_frame)
-            return prediction
-        except dr.errors.ServerError as e:
-            if "Inference server is starting" in str(e):
-                elapsed_time = time.time() - start_time
-                if elapsed_time > max_wait_seconds:
-                    raise TimeoutError(
-                        f"Server did not start within {max_wait_seconds} seconds"
-                    )
-                logger.info(
-                    f"Server is starting. Retrying in {retry_interval_seconds} seconds..."
-                )
-                time.sleep(retry_interval_seconds)
-            else:
-                # If it's a different ServerError, re-raise it
-                raise
-
-
 def get_rag_completion(
-    question: str, messages: Iterable[ChatCompletionMessageParam]
-) -> Tuple[RAGOutput, str]:
+    question: str, messages: list[ChatCompletionMessageParam]
+) -> RAGOutput:
     """Retrieve predictions from a DataRobot RAG deployment and DataRobot guard deployment"""
-    rag_deployment_info = _get_deployment_info(rag_deployment_id)
-    rag_deployment = rag_deployment_info.deployment
-    target_name = rag_deployment_info.target_name
-
-    association_id = f"{uuid.uuid4().hex}_{datetime.now()}"
-    data = RAGInput(
-        promptText=question,
-        messages=messages,
-        association_id=association_id,
-    ).model_dump(mode="json", by_alias=True)
-    data["messages"] = json.dumps(data["messages"])
-    rag_input = pd.DataFrame.from_records([data])
-    logging.info(
-        f"Rag Input: {json.dumps(rag_input.to_dict(orient='records'), indent=4)}"
+    dr_client = dr.client.get_client()
+    openai_client = OpenAI(
+        base_url=dr_client.endpoint + f"/deployments/{rag_deployment_id}",
+        api_key=dr_client.token,
     )
 
-    rag_response_df = _predict_with_retry(
-        rag_deployment, data_frame=rag_input
-    ).dataframe
-    rag_response_df.columns = rag_response_df.columns.str.replace(
-        "_(PREDICTION|OUTPUT)$", "", regex=True
+    response = openai_client.chat.completions.create(
+        model="datarobot-deployed-llm",
+        messages=messages
+        + [ChatCompletionUserMessageParam(content=question, role="user")],
     )
-    rag_response_dict = rag_response_df.to_dict(orient="records")[0]
-    rag_response_dict["__target"] = target_name
 
-    rag_output = RAGOutput.model_validate(rag_response_dict)
+    rag_output = RAGOutput(
+        completion=str(response.choices[0].message.content),
+        references=response.citations,  # type: ignore[attr-defined]
+        question=question,
+    )
 
-    return rag_output, association_id
+    return rag_output

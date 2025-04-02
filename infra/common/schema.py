@@ -92,6 +92,7 @@ class CustomModelArgs(BaseModel):
     negative_class_label: str | None = None
     positive_class_label: str | None = None
     folder_path: str | None = None
+    resource_bundle_id: str | None = None
 
 
 class RegisteredModelArgs(BaseModel):

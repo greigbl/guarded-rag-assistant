@@ -42,7 +42,7 @@ core = CoreSettings(
     application_type=ApplicationType.DR,
 )
 
-runtime_environment_moderations = GlobalRuntimeEnvironment.PYTHON_311_MODERATIONS.value
+runtime_environment_moderations = GlobalRuntimeEnvironment.PYTHON_312_MODERATIONS.value
 
 default_prediction_server_id: Optional[str] = None
 

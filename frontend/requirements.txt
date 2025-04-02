@@ -7,5 +7,5 @@ langchain-core==0.2.19
 datarobot-predict>=1.9.6
 pydantic-settings==2.5.2
 pydantic==2.9.2
-openai==1.47.1
+openai>=1.47.1,<2
 babel==2.16.0

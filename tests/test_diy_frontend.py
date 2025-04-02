@@ -129,6 +129,6 @@ def test_reports_citations(app_post_prompt: AppTest) -> None:
     references = app_post_prompt.session_state.response.references
     citation_markdown = [i.value for i in app_post_prompt.expander[0].markdown]
     for i in range(len(references)):
-        assert f"**Reference {i+1}:**" in citation_markdown
+        assert f"**Reference {i + 1}:**" in citation_markdown
 
     assert len(references) > 0

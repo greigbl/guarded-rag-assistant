@@ -13,10 +13,10 @@
 # limitations under the License.
 
 # mypy: ignore-errors
-import json
 import os
 import sys
-import traceback
+from collections.abc import Iterator
+from typing import Union
 
 import pandas as pd
 import yaml
@@ -25,22 +25,32 @@ from langchain.chains.history_aware_retriever import (
     create_history_aware_retriever,
 )
 from langchain.chains.retrieval import create_retrieval_chain
-from langchain_community.callbacks import get_openai_callback
-from langchain_community.embeddings.sentence_transformer import (
-    SentenceTransformerEmbeddings,
-)
+from langchain.schema.runnable import Runnable
 from langchain_community.vectorstores.faiss import FAISS
-from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.prompts import (
     ChatPromptTemplate,
     MessagesPlaceholder,
 )
-from langchain_core.runnables import Runnable
 from langchain_core.vectorstores import VectorStoreRetriever
+from langchain_huggingface import (
+    HuggingFaceEmbeddings,
+)
 from langchain_openai import AzureChatOpenAI
-from pandas import DataFrame
+from openai.types.chat import (
+    ChatCompletion,
+    ChatCompletionChunk,
+    CompletionCreateParams,
+)
+from utils import (
+    convert_messages_to_chat_history,
+    create_chat_completion,
+    merge_result_dicts,
+    parse_chat_history,
+    process_single_row,
+)
 
 sys.path.append("../")
+
 from docsassist.credentials import AzureOpenAICredentials
 from docsassist.schema import PROMPT_COLUMN_NAME, TARGET_COLUMN_NAME, RAGModelSettings
 
@@ -49,7 +59,7 @@ def get_chain(
     input_dir, credentials: AzureOpenAICredentials, model_settings: RAGModelSettings
 ):
     """Instantiate the RAG chain."""
-    embedding_function = SentenceTransformerEmbeddings(
+    embedding_function = HuggingFaceEmbeddings(
         model_name=model_settings.embedding_model_name,
         cache_folder=input_dir + "/sentencetransformers",
     )
@@ -115,55 +125,71 @@ def load_model(input_dir):
         model_settings = RAGModelSettings.model_validate(yaml.safe_load(f))
     credentials = AzureOpenAICredentials()
     chain = get_chain(input_dir, credentials=credentials, model_settings=model_settings)
-    return chain, model_settings
+    return chain
 
 
-def score(data: pd.DataFrame, model: tuple[Runnable, RAGModelSettings], **kwargs):
-    """ "Orchestrate a RAG completion with our vector database."""
+def score(data: pd.DataFrame, model: Runnable, **kwargs) -> pd.DataFrame:
+    """
+    Orchestrate a RAG completion with our vector database.
 
-    chain, model_settings = model
+    Args:
+        data: Input DataFrame containing questions and optional message history
+        model: LangChain chain
+        **kwargs: Additional arguments
 
-    full_result_dict: dict[str, list] = {TARGET_COLUMN_NAME: []}
+    Returns:
+        DataFrame with answers and citations
+    """
+    chain = model
+    results = []
 
-    for i, row in data.iterrows():
+    for _, row in data.iterrows():
         question = row[PROMPT_COLUMN_NAME]
-        chat_history = []
-        if "messages" in row:
-            messages = row["messages"]
-            messages = json.loads(messages)
-            for _, a in enumerate(messages):
-                message_dict = a
-                if message_dict["role"] == "user":
-                    message = HumanMessage.validate(message_dict)
-                else:
-                    message = AIMessage.validate(message_dict)
-                chat_history.append(message)
+        chat_history = parse_chat_history(row.get("messages", ""))
+        result = process_single_row(
+            question, chat_history, chain, target_column_name=TARGET_COLUMN_NAME
+        )
+        results.append(result)
 
-        try:
-            with get_openai_callback():
-                chain_output = chain.invoke(
-                    {
-                        "input": question,
-                        "chat_history": chat_history,
-                    }
-                )
-            full_result_dict[TARGET_COLUMN_NAME].append(chain_output["answer"])
-            for i, doc in enumerate(chain_output["context"]):
-                if f"CITATION_CONTENT_{i}" not in full_result_dict:
-                    full_result_dict[f"CITATION_CONTENT_{i}"] = []
-                if f"CITATION_SOURCE_{i}" not in full_result_dict:
-                    full_result_dict[f"CITATION_SOURCE_{i}"] = []
-                if f"CITATION_PAGE_{i}" not in full_result_dict:
-                    full_result_dict[f"CITATION_PAGE_{i}"] = []
-                full_result_dict[f"CITATION_CONTENT_{i}"].append(doc.page_content)
-                full_result_dict[f"CITATION_SOURCE_{i}"].append(
-                    doc.metadata.get("source", "")
-                )
-                full_result_dict[f"CITATION_PAGE_{i}"].append(
-                    doc.metadata.get("page", "")
-                )
+    final_result = merge_result_dicts(results)
+    return pd.DataFrame(final_result)
 
-        except Exception:
-            full_result_dict[TARGET_COLUMN_NAME].append(traceback.format_exc())
 
-    return DataFrame(full_result_dict)
+def chat(
+    completion_params: CompletionCreateParams,
+    model: Runnable,
+) -> Union[ChatCompletion, Iterator[ChatCompletionChunk]]:
+    """
+    OpenAI-compatible chat function that uses a LangChain RAG chain under the hood.
+
+    Args:
+        completion_params: OpenAI-style completion parameters
+        model: LangChain chain
+
+    Returns:
+        ChatCompletion or Iterator[ChatCompletionChunk]
+    """
+    chain = model
+
+    # Extract messages from completion params
+    messages = completion_params.get("messages", [])
+
+    # Convert messages to chat history
+    chat_history = convert_messages_to_chat_history(messages)
+
+    # Get the last user message
+    user_message = next(
+        (msg["content"] for msg in reversed(messages) if msg["role"] == "user"), None
+    )
+
+    if user_message is None:
+        raise ValueError("No user message found in completion params")
+
+    # Run the chain with chat history
+    response = chain.invoke({"input": user_message, "chat_history": chat_history})
+
+    return create_chat_completion(
+        response["answer"],
+        completion_params.get("model"),
+        citations=response["context"],
+    )

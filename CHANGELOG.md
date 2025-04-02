@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [v0.1.19-release.11.0] - 2025-04-02
+
+### Added
+- Resource bundle config option for the custom model
+- Add support for NIM models and existing LLM deployments
+- Add chat endpoint to custom deployment
+
 ## [0.1.19] - 2025-03-06
 
 ### Changed

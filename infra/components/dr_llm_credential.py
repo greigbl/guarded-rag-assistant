@@ -31,8 +31,6 @@ from infra.common.globals import GlobalLLM, LLMConfig
 
 from ..settings_main import project_name
 
-# from .aws_credential import AWSCredential
-
 
 def get_credential_runtime_parameter_values(
     credentials: DRCredentials | None,
@@ -202,7 +200,7 @@ def get_credentials(
                             Unable to run a successful test completion against deployment '{credentials.azure_deployment or lookup[llm.name]}'
                             on '{credentials.azure_endpoint}' with API version '{credentials.api_version or "2023-05-15"}'
                             with provided Azure OpenAI credentials. Please validate your credentials.
-                            
+
                             Please validate your credentials or check {__file__} for details.
                             """)
                     ) from e
@@ -249,10 +247,9 @@ def get_credentials(
                 except Exception as e:
                     raise ValueError(
                         textwrap.dedent(f"""
-                            Unable to run a successful test completion against model '{lookup[llm.name]}' in region '{credentials.region_name or "us-west-1"}' 
+                            Unable to run a successful test completion against model '{lookup[llm.name]}' in region '{credentials.region_name or "us-west-1"}'
                             using request body '{request_body}' with provided AWS credentials.
-                            
-                            
+
                             Please validate your credentials or check {__file__} for details.
                             """)
                     ) from e

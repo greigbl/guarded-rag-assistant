@@ -109,9 +109,9 @@ def render_answer_and_citations(container: DeltaGenerator, response: RAGOutput) 
     with st.expander(gettext("Show Citations")):
         for i, doc in enumerate(response.references):
             st.markdown(gettext("**Reference {0}:**").format(i + 1))
-            st.markdown(gettext("**Source:** {0}").format(doc.metadata.source))
+            st.markdown(gettext("**Source:** {0}").format(doc.metadata["source"]))
             st.markdown(gettext("**Content:**"))
-            for text in doc.page_content.split("\\n"):
+            for text in doc.content.split("\\n"):
                 if text.strip():
                     st.markdown(text)
             st.markdown("---")
@@ -122,13 +122,13 @@ def main() -> None:
     st.title(app_settings.page_title)
 
     chat_container = st.container()
-
+    prompt_container = st.container()
     if st.session_state.messages:
         render_conversation_history(chat_container)
     answer_and_citations_placeholder = chat_container.container()
     if "prompt_sent" not in st.session_state:
         st.session_state.prompt_sent = False
-    prompt = chat_container.chat_input(
+    prompt = prompt_container.chat_input(
         placeholder=gettext("Your message"),
         key=None,
         max_chars=None,
@@ -140,14 +140,13 @@ def main() -> None:
 
     if prompt and prompt.strip():
         st.session_state.prompt_sent = True
-
+        render_message(chat_container, prompt, True)
         with st.spinner(gettext("Getting AI response...")):
-            response, association_id = predict.get_rag_completion(
+            response = predict.get_rag_completion(
                 question=prompt,
                 messages=st.session_state.messages,
             )
         st.session_state.response = response
-        st.session_state.association_id = association_id
         st.session_state.messages.extend(
             [
                 ChatCompletionUserMessageParam(content=prompt, role="user"),
