@@ -11,19 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 import os
 import pathlib
 import sys
 
-import papermill as pm
 import pulumi
 import pulumi_datarobot as datarobot
-from datarobot_pulumi_utils.common import check_feature_flags
-from datarobot_pulumi_utils.common.urls import get_deployment_url
-from datarobot_pulumi_utils.pulumi.custom_model_deployment import CustomModelDeployment
-from datarobot_pulumi_utils.pulumi.proxy_llm_blueprint import ProxyLLMBlueprint
-from datarobot_pulumi_utils.schema.apps import ApplicationTemplates
-from datarobot_pulumi_utils.schema.llms import LLMs
 
 sys.path.append("..")
 
@@ -36,24 +30,19 @@ from docsassist.schema import ApplicationType, RAGType
 from infra import (
     settings_app_infra,
     settings_generative,
-    settings_guardrails,
     settings_keyword_guard,
     settings_main,
 )
-from infra.settings_global_model_guardrails import global_guardrails
-from infra.settings_proxy_llm import CHAT_MODEL_NAME
-from utils.credentials import get_credential_runtime_parameter_values, get_credentials
-
-TEXTGEN_DEPLOYMENT_ID = os.environ.get("TEXTGEN_DEPLOYMENT_ID")
-TEXTGEN_REGISTERED_MODEL_ID = os.environ.get("TEXTGEN_REGISTERED_MODEL_ID")
-
-if settings_generative.LLM == LLMs.DEPLOYED_LLM:
-    pulumi.info(f"{TEXTGEN_DEPLOYMENT_ID=}")
-    pulumi.info(f"{TEXTGEN_REGISTERED_MODEL_ID=}")
-    if (TEXTGEN_DEPLOYMENT_ID is None) == (TEXTGEN_REGISTERED_MODEL_ID is None):  # XOR
-        raise ValueError(
-            "Either TEXTGEN_DEPLOYMENT_ID or TEXTGEN_REGISTERED_MODEL_ID must be set when using a deployed LLM. Plese check your .env file"
-        )
+from infra.common.feature_flags import check_feature_flags
+from infra.common.papermill import run_notebook
+from infra.common.urls import get_deployment_url
+from infra.components.custom_model_deployment import CustomModelDeployment
+from infra.components.dr_llm_credential import (
+    get_credential_runtime_parameter_values,
+    get_credentials,
+)
+from infra.components.rag_custom_model import RAGCustomModel
+from infra.settings_global_guardrails import global_guardrails
 
 LocaleSettings().setup_locale()
 
@@ -85,8 +74,9 @@ credential_runtime_parameter_values = get_credential_runtime_parameter_values(
     credentials=credentials
 )
 
+
 keyword_guard_deployment = CustomModelDeployment(
-    resource_name=f"Keyword Guard [{settings_main.project_name}]",
+    resource_name=f"My Keyword Guard [{settings_main.project_name}]",
     custom_model_args=settings_keyword_guard.custom_model_args,
     registered_model_args=settings_keyword_guard.registered_model_args,
     prediction_environment=prediction_environment,
@@ -121,75 +111,20 @@ guard_configurations = [
         all_guard_deployments,
         all_guardrails_configs,
     )
-] + settings_guardrails.guardrails
+]
 
 if settings_main.core.rag_type == RAGType.DR:
-    dataset = datarobot.DatasetFromFile(
-        use_case_ids=[use_case.id],
-        **settings_generative.dataset_args.model_dump(),
-    )
-    vector_database = datarobot.VectorDatabase(
-        dataset_id=dataset.id,
-        use_case_id=use_case.id,
-        **settings_generative.vector_database_args.model_dump(),
-    )
-    playground = datarobot.Playground(
-        use_case_id=use_case.id,
-        **settings_generative.playground_args.model_dump(),
-    )
-
-    if settings_generative.LLM == LLMs.DEPLOYED_LLM:
-        if TEXTGEN_REGISTERED_MODEL_ID is not None:
-            proxy_llm_registered_model = datarobot.RegisteredModel.get(
-                resource_name="Existing TextGen Registered Model",
-                id=TEXTGEN_REGISTERED_MODEL_ID,
-            )
-
-            proxy_llm_deployment = datarobot.Deployment(
-                resource_name=f"Guarded RAG LLM Deployment [{settings_main.project_name}]",
-                registered_model_version_id=proxy_llm_registered_model.version_id,
-                prediction_environment_id=prediction_environment.id,
-                label=f"Guarded RAG Assistant LLM Deployment [{settings_main.project_name}]",
-                use_case_ids=[use_case.id],
-                opts=pulumi.ResourceOptions(
-                    replace_on_changes=["registered_model_version_id"]
-                ),
-            )
-        elif TEXTGEN_DEPLOYMENT_ID is not None:
-            proxy_llm_deployment = datarobot.Deployment.get(
-                resource_name="Existing LLM Deployment", id=TEXTGEN_DEPLOYMENT_ID
-            )
-        else:
-            raise ValueError(
-                "Either TEXTGEN_REGISTERED_MODEL_ID or TEXTGEN_DEPLOYMENT_ID have to be set in `.env`"
-            )
-
-        llm_blueprint = ProxyLLMBlueprint(
-            use_case_id=use_case.id,
-            playground_id=playground.id,
-            proxy_llm_deployment_id=proxy_llm_deployment.id,
-            vector_database_id=vector_database.id,
-            chat_model_name=CHAT_MODEL_NAME,
-            **settings_generative.llm_blueprint_args.model_dump(mode="python"),
-        )
-
-    elif settings_generative.LLM != LLMs.DEPLOYED_LLM:
-        llm_blueprint = datarobot.LlmBlueprint(  # type: ignore[assignment]
-            playground_id=playground.id,
-            vector_database_id=vector_database.id,
-            **settings_generative.llm_blueprint_args.model_dump(),
-        )
-
-    rag_custom_model = datarobot.CustomModel(
-        **settings_generative.custom_model_args.model_dump(exclude_none=True),
-        use_case_ids=[use_case.id],
-        source_llm_blueprint_id=llm_blueprint.id,
+    rag_custom_model = RAGCustomModel(
+        resource_name=f"Guarded RAG Prep [{settings_main.project_name}]",
+        use_case=use_case,
+        dataset_args=settings_generative.dataset_args,
+        playground_args=settings_generative.playground_args,
+        vector_database_args=settings_generative.vector_database_args,
+        llm_blueprint_args=settings_generative.llm_blueprint_args,
+        runtime_parameter_values=credential_runtime_parameter_values,
         guard_configurations=guard_configurations,
-        runtime_parameter_values=[]
-        if settings_generative.LLM == LLMs.DEPLOYED_LLM
-        else credential_runtime_parameter_values,
+        custom_model_args=settings_generative.custom_model_args,
     )
-
 elif settings_main.core.rag_type == RAGType.DIY:
     if not all(
         [
@@ -198,21 +133,13 @@ elif settings_main.core.rag_type == RAGType.DIY:
         ]
     ):
         pulumi.info("Executing doc chunking + vdb building notebook...")
-        pm.execute_notebook(
-            settings_generative.diy_rag_nb,
-            output_path=None,
-            cwd=settings_generative.diy_rag_nb.parent,
-            log_output=False,
-            progress_bar=False,
-            stderr_file=sys.stderr,
-            stdout_file=sys.stdout,
-        )
+        run_notebook(settings_generative.diy_rag_nb)
     else:
         pulumi.info(
             f"Using existing outputs from build_rag.ipynb in '{settings_generative.diy_rag_deployment_path}'"
         )
 
-    rag_custom_model = datarobot.CustomModel(
+    rag_custom_model = datarobot.CustomModel(  # type: ignore[assignment]
         files=settings_generative.get_diy_rag_files(
             runtime_parameter_values=credential_runtime_parameter_values,
         ),
@@ -255,41 +182,18 @@ if settings_main.core.application_type == ApplicationType.DIY:
         use_case_ids=[use_case.id],
     )
 elif settings_main.core.application_type == ApplicationType.DR:
-    feedback_metric = datarobot.CustomMetric(
-        resource_name="Feedback Metric",
-        deployment_id=rag_deployment.id,
-        baseline_value=0.5,
-        directionality="higherIsBetter",
-        units="Positive Feedback",
-        type="average",
-        is_model_specific=True,
-        is_geospatial=False,
-    )
-
-    app_source = datarobot.ApplicationSourceFromTemplate(
-        resource_name=f"Guarded RAG Assistant App Source [{settings_main.project_name}]",
-        template_id=ApplicationTemplates.Q_AND_A_CHAT_GENERATION_APP.value.id,
-        runtime_parameter_values=[
-            datarobot.ApplicationSourceFromTemplateRuntimeParameterValueArgs(
-                key="DEPLOYMENT_ID", value=rag_deployment.id, type="deployment"
-            ),
-            datarobot.ApplicationSourceFromTemplateRuntimeParameterValueArgs(
-                key="CUSTOM_METRIC_ID", value=feedback_metric.id, type="string"
-            ),
-        ],
-    )
-    qa_application = datarobot.CustomApplication(
+    qa_application = datarobot.QaApplication(  # type: ignore[assignment]
         resource_name=settings_app_infra.app_resource_name,
         name=f"Guarded RAG Assistant [{settings_main.project_name}]",
-        source_version_id=app_source.version_id,
-        allow_auto_stopping=True,
-        use_case_ids=[use_case.id],
+        deployment_id=rag_deployment.deployment_id,
         opts=pulumi.ResourceOptions(delete_before_replace=True),
     )
 else:
     raise NotImplementedError(
         f"Unknown application type: {settings_main.core.application_type}"
     )
+
+qa_application.id.apply(settings_app_infra.ensure_app_settings)
 
 
 pulumi.export(rag_deployment_env_name, rag_deployment.id)
